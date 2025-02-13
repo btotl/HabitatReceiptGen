@@ -24,75 +24,12 @@
             box-sizing: border-box;
         }
 
-        /* Mobile-specific styles */
-        @media screen and (max-width: 480px) {
-            body {
-                padding: 5px;
-                max-width: 100%;
-            }
-
-            input {
-                width: calc(33.33% - 10px);
-                box-sizing: border-box;
-            }
-
-            button {
-                width: 100%;
-                margin-top: 5px;
-                padding: 10px;
-            }
-        }
-
-        /* iOS Print Specific Styles */
-
-        @media print {
-            body {
-                margin: 0;
-                padding: 0;
-                background: none;
-                width: 100%;
-                -webkit-print-color-adjust: exact;
-            }
-
-            .receipt-container {
-                box-shadow: none;
-                border: none;
-                padding: 0;
-                width: 100%;
-            }
-
-            #addItem, .no-print {
-                display: none !important;
-            }
-
-            /* Ensure black text on white background for iOS */
-            * {
-                color: black !important;
-                background: white !important;
-            }
-
-            /* Force page size for iOS */
-            @page {
-                size: auto;
-                margin: 0mm;
-            }
-    
-  			  @page :footer {
-        			display: none;
-    			}
-    
-  			  @page :header {
-        			display: none;
-				}
-}
-
-        }
-
-        /* Rest of your existing styles */
         .logo {
             max-width: 150px;
+            max-height: 50px;
             margin: 0 auto 10px;
             display: block;
+            object-fit: contain;
         }
 
         .info {
@@ -148,7 +85,7 @@
             padding: 8px;
             margin: 2px;
             border: 1px solid #999;
-            font-size: 16px; /* Larger for mobile */
+            font-size: 16px;
             border-radius: 4px;
         }
 
@@ -159,20 +96,22 @@
             border: none;
             padding: 8px 12px;
             cursor: pointer;
-            font-size: 16px; /* Larger for mobile */
+            font-size: 16px;
             border-radius: 4px;
         }
-			.print-button {
-    			position: fixed;
-    			bottom: 20px;
-    			right: 20px;
-    			background-color: #007AFF; /* iOS blue */
-    			color: white;
-    			padding: 12px 24px;
-    			border-radius: 25px;
-    			box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    			z-index: 1000;
-			}
+
+        .print-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007AFF;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
         .thank-you {
             text-align: center;
             font-size: 12px;
@@ -180,10 +119,78 @@
             border-top: 1px dashed #000;
             padding-top: 10px;
         }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 5px;
+                max-width: 100%;
+            }
+
+            input {
+                width: calc(33.33% - 10px);
+                box-sizing: border-box;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 5px;
+                padding: 10px;
+            }
+        }
+
+        @media print {
+            @page {
+                margin: 0;
+                size: 80mm auto;
+            }
+
+            body {
+                margin: 0;
+                padding: 0 !important;
+                background: none;
+                width: 100%;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .receipt-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                width: 100%;
+                margin: 0;
+            }
+
+            .logo {
+                max-width: 120px;
+                max-height: 40px;
+            }
+
+            #addItem, 
+            .print-button, 
+            .no-print {
+                display: none !important;
+                visibility: hidden !important;
+                position: absolute !important;
+                left: -9999px !important;
+                opacity: 0 !important;
+                height: 0 !important;
+                width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                color: black !important;
+                background: white !important;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="addItem">
+    <div id="addItem" class="no-print">
         <input type="text" id="itemName" list="suggestions" placeholder="Item" autocomplete="off">
         <datalist id="suggestions">
             <option value="Pot">
@@ -231,108 +238,42 @@
         </div>
     </div>
 
-    <button onclick="preparePrint()" class="print-button">Print Receipt</button>
+    <button onclick="window.print()" class="print-button no-print">Print Receipt</button>
 
     <script>
-        // Previous JavaScript remains the same, just add this new function:
-        function preparePrint() {
-            // iOS-specific print preparation
-            document.querySelector('.print-button').style.display = 'none';
-            window.print();
-            setTimeout(() => {
-                document.querySelector('.print-button').style.display = 'block';
-            }, 100);
-        }
+        // Set current date
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString();
 
-        // Rest of your existing JavaScript...
-
-    // Set current date
-    const today = new Date();
-    document.getElementById('current-date').textContent = 
-        today.toLocaleDateString('en-AU', {day: '2-digit', month: '2-digit', year: '2-digit'});
-
-    let items = [];
-
-    function calculateSpecialPrice(itemName, quantity, regularPrice) {
-        itemName = itemName.toLowerCase();
-        
-        if (itemName === 'seedling' || itemName === 'seedlings') {
-            if (quantity <= 3) {
-                return 16;
-            } else if (quantity <= 5) {
-                return 24;
-            } else {
-                return 24 + (quantity - 5) * 4.80;
-            }
-        }
-        
-        if (itemName === 'flowers 105mm') {
-            if (quantity <= 3) {
-                return 10;
-            } else if (quantity <= 5) {
-                return 15;
-            } else {
-                return 15 + (quantity - 5) * 3;
-            }
-        }
-
-        // If no special pricing applies, return regular price * quantity
-        return quantity * regularPrice;
-    }
-
-    function addItem() {
-        const itemName = document.getElementById('itemName').value;
-        const itemQty = parseFloat(document.getElementById('itemQty').value);
-        const itemPrice = parseFloat(document.getElementById('itemPrice').value || 0);
-
-        if (itemName && itemQty) {
-            let total = calculateSpecialPrice(itemName, itemQty, itemPrice);
-            
-            // Calculate the effective unit price
-            let effectiveUnitPrice = total / itemQty;
-
-            items.push({
-                name: itemName,
-                qty: itemQty,
-                price: effectiveUnitPrice,
-                total: total
-            });
-
-            updateTable();
-            clearInputs();
-        }
-    }
-
-    function updateTable() {
-        const tbody = document.getElementById('receiptBody');
-        tbody.innerHTML = '';
         let grandTotal = 0;
 
-        items.forEach(item => {
-            const row = tbody.insertRow();
-            row.insertCell(0).textContent = item.name;
-            row.insertCell(1).textContent = item.qty;
-            row.insertCell(2).textContent = '$' + item.price.toFixed(2);
-            row.insertCell(3).textContent = '$' + item.total.toFixed(2);
-            grandTotal += item.total;
-        });
+        function addItem() {
+            const itemName = document.getElementById('itemName').value;
+            const itemQty = document.getElementById('itemQty').value;
+            const itemPrice = document.getElementById('itemPrice').value;
 
-        document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
-    }
+            if (!itemName || !itemQty || !itemPrice) {
+                alert('Please fill in all fields');
+                return;
+            }
 
-    function clearInputs() {
-        document.getElementById('itemName').value = '';
-        document.getElementById('itemQty').value = '';
-        document.getElementById('itemPrice').value = '';
-        document.getElementById('itemName').focus();
-    }
+            const total = (itemQty * itemPrice).toFixed(2);
+            grandTotal += parseFloat(total);
 
-    // Add keyboard shortcut for adding items (Enter key)
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            addItem();
+            const tbody = document.getElementById('receiptBody');
+            const newRow = tbody.insertRow();
+            
+            newRow.insertCell(0).textContent = itemName;
+            newRow.insertCell(1).textContent = itemQty;
+            newRow.insertCell(2).textContent = '$' + parseFloat(itemPrice).toFixed(2);
+            newRow.insertCell(3).textContent = '$' + total;
+
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+
+            // Clear inputs
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQty').value = '';
+            document.getElementById('itemPrice').value = '';
         }
-    });
     </script>
 </body>
 </html>
