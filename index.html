@@ -44,6 +44,7 @@
         }
 
         /* iOS Print Specific Styles */
+
         @media print {
             body {
                 margin: 0;
@@ -75,6 +76,16 @@
                 size: auto;
                 margin: 0mm;
             }
+    
+  			  @page :footer {
+        			display: none;
+    			}
+    
+  			  @page :header {
+        			display: none;
+				}
+}
+
         }
 
         /* Rest of your existing styles */
@@ -151,19 +162,17 @@
             font-size: 16px; /* Larger for mobile */
             border-radius: 4px;
         }
-
-        .print-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #007AFF; /* iOS blue */
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-
+			.print-button {
+    			position: fixed;
+    			bottom: 20px;
+    			right: 20px;
+    			background-color: #007AFF; /* iOS blue */
+    			color: white;
+    			padding: 12px 24px;
+    			border-radius: 25px;
+    			box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    			z-index: 1000;
+			}
         .thank-you {
             text-align: center;
             font-size: 12px;
